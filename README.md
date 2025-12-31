@@ -13,7 +13,6 @@ Get the latest release for your platform:
 
 - **Compress**: Reduce PDF file size using Ghostscript presets (screen, ebook, printer, prepress)
 - **Combine**: Merge multiple PDFs into one, with support for interleaving and page reordering
-- **Thumbnails**: Visual page previews when editing and reordering pages
 - **Split**: *(Coming Soon)* Split PDFs by page ranges
 - **Rotate**: *(Coming Soon)* Rotate pages within a PDF
 
