@@ -1,5 +1,3 @@
-# DadJoke - PDF Toolset
-
 A lightweight, open-source PDF toolset built with [Wails](https://wails.io/) (Go + Svelte).
 
 ## Download
