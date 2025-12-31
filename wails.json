@@ -1,6 +1,6 @@
 {
   "$schema": "https://wails.io/schemas/config.v2.json",
-  "name": "dadjoke",
+  "name": "DadsPDFTools",
   "outputfilename": "DadsPDFTools",
   "frontend:install": "bun install",
   "frontend:build": "bun run build",
@@ -9,5 +9,12 @@
   "author": {
     "name": "Ilia Mireskandari",
     "email": "mrskndri@gmail.com"
+  },
+  "info": {
+    "companyName": "Ilia Mireskandari",
+    "productName": "Dad's PDF Tools",
+    "productVersion": "1.0.0",
+    "copyright": "Copyright 2024 Ilia Mireskandari",
+    "comments": "A simple PDF toolset for Dad"
   }
 }
