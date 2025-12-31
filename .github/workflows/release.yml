@@ -79,21 +79,42 @@ jobs:
         run: go install github.com/wailsapp/wails/v2/cmd/wails@latest
 
       - name: Install NSIS
-        run: choco install nsis -y
+        run: |
+          choco install nsis -y
+          echo "C:\Program Files (x86)\NSIS" >> $env:GITHUB_PATH
 
       - name: Install frontend dependencies
         run: |
           cd frontend
           bun install
 
-      - name: Build Windows installer
+      - name: Build Windows app
         run: wails build -platform windows/amd64 -nsis
+
+      - name: Bundle Ghostscript
+        run: |
+          if (Test-Path "binaries\windows\gswin64c.exe") {
+            Copy-Item "binaries\windows\gswin64c.exe" "build\bin\"
+            Copy-Item "binaries\windows\gsdll64.dll" "build\bin\"
+          }
+        shell: pwsh
+
+      - name: Create ZIP
+        run: |
+          cd build\bin
+          Compress-Archive -Path *.exe,*.dll -DestinationPath DadsPDFTools-Windows-x64.zip
+        shell: pwsh
+
+      - name: List build output
+        run: dir build\bin
+        shell: cmd
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: windows-build
-          path: build/bin/*-installer.exe
+          path: build/bin/DadsPDFTools-Windows-x64.zip
+          if-no-files-found: error
 
   release:
     needs: [build-macos, build-windows]
