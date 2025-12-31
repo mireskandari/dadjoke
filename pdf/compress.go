@@ -89,6 +89,7 @@ func CompressPDF(ctx context.Context, inputPath string, preset CompressionPreset
 
 	// Execute Ghostscript
 	cmd := exec.CommandContext(ctx, gsPath, args...)
+	hideWindow(cmd) // Hide console window on Windows
 	var stderr bytes.Buffer
 	cmd.Stderr = &stderr
 

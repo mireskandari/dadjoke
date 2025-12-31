@@ -99,6 +99,7 @@ func GenerateAllThumbnails(ctx context.Context, pdfPath string, width, height in
 	}
 
 	cmd := exec.CommandContext(ctx, gsPath, args...)
+	hideWindow(cmd) // Hide console window on Windows
 	var stderr bytes.Buffer
 	cmd.Stderr = &stderr
 
@@ -185,6 +186,7 @@ func GenerateThumbnail(ctx context.Context, pdfPath string, pageIndex int, width
 	}
 
 	cmd := exec.CommandContext(ctx, gsPath, args...)
+	hideWindow(cmd) // Hide console window on Windows
 	var stderr bytes.Buffer
 	cmd.Stderr = &stderr
 
