@@ -22,7 +22,7 @@ func main() {
 	bgColor := &options.RGBA{R: 250, G: 249, B: 246, A: 1}
 
 	err := wails.Run(&options.App{
-		Title:  "Dad's PDF Tools",
+		Title:  "Dad PDF Stuff",
 		Width:  900,
 		Height: 700,
 		AssetServer: &assetserver.Options{

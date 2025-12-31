@@ -40,27 +40,27 @@ jobs:
 
       - name: Bundle Ghostscript
         run: |
-          mkdir -p build/bin/DadsPDFTools.app/Contents/Resources
+          mkdir -p build/bin/DadPDFStuff.app/Contents/Resources
           if [ -f binaries/darwin/gs ]; then
-            cp binaries/darwin/gs build/bin/DadsPDFTools.app/Contents/Resources/gs
-            chmod +x build/bin/DadsPDFTools.app/Contents/Resources/gs
+            cp binaries/darwin/gs build/bin/DadPDFStuff.app/Contents/Resources/gs
+            chmod +x build/bin/DadPDFStuff.app/Contents/Resources/gs
           fi
 
       - name: Ad-hoc code sign
         run: |
-          codesign --force --deep -s - build/bin/DadsPDFTools.app
+          codesign --force --deep -s - build/bin/DadPDFStuff.app
           echo "App signed with ad-hoc signature"
 
       - name: Create ZIP
         run: |
           cd build/bin
-          zip -r DadsPDFTools-macOS-arm64.zip DadsPDFTools.app
+          zip -r DadPDFStuff-macOS-arm64.zip DadPDFStuff.app
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: macos-build
-          path: build/bin/DadsPDFTools-macOS-arm64.zip
+          path: build/bin/DadPDFStuff-macOS-arm64.zip
 
   build-windows:
     runs-on: windows-latest
