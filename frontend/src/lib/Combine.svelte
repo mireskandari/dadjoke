@@ -8,7 +8,8 @@
     MergeTwoFiles,
     ReorderPages,
     SaveFile,
-    OpenFile
+    OpenFile,
+    GenerateAllThumbnails
   } from '../../wailsjs/go/main/App.js';
   import FileDropZone from './components/FileDropZone.svelte';
   import FileList from './components/FileList.svelte';
@@ -27,11 +28,41 @@
   let error = null;
   let savedPath = null;
 
+  // Thumbnails state: { [docId]: firstPageThumbnailDataUrl }
+  let thumbnails = {};
+  // Edit pages thumbnails: [{ pageIndex, imageData }]
+  let editPageThumbnails = [];
+
   // Dialogs
   let showMergeDialog = false;
   let showEditPagesDialog = false;
   let editingDoc = null;
   let editPageOrder = [];
+
+  // Generate thumbnail for a document (first page only for list view)
+  async function generateThumbnail(doc) {
+    try {
+      const results = await GenerateAllThumbnails(doc.path, 50, 70);
+      if (results && results.length > 0) {
+        thumbnails = { ...thumbnails, [doc.id]: results[0].imageData };
+      }
+    } catch (e) {
+      console.error('Failed to generate thumbnail:', e);
+    }
+  }
+
+  // Generate all page thumbnails for edit dialog
+  async function generateEditThumbnails(doc) {
+    try {
+      editPageThumbnails = [];
+      const results = await GenerateAllThumbnails(doc.path, 80, 110);
+      if (results) {
+        editPageThumbnails = results;
+      }
+    } catch (e) {
+      console.error('Failed to generate page thumbnails:', e);
+    }
+  }
 
   // Event handlers
   function handleProgress(data) {
@@ -66,6 +97,10 @@
       if (selected && selected.length > 0) {
         documents = [...documents, ...selected];
         error = null;
+        // Generate thumbnails for new files
+        for (const doc of selected) {
+          generateThumbnail(doc);
+        }
       }
     } catch (e) {
       error = e.message || 'Failed to select files';
@@ -78,6 +113,8 @@
         const doc = await LoadPDFInfo(path);
         if (doc) {
           documents = [...documents, doc];
+          // Generate thumbnail for new file
+          generateThumbnail(doc);
         }
       } catch (e) {
         error = `Failed to load ${path}: ${e.message}`;
@@ -93,6 +130,9 @@
     const id = event.detail.id;
     documents = documents.filter(d => d.id !== id);
     selectedIds = selectedIds.filter(i => i !== id);
+    // Clean up thumbnail
+    const { [id]: _, ...rest } = thumbnails;
+    thumbnails = rest;
   }
 
   function handleSelectionChange(event) {
@@ -139,7 +179,7 @@
   }
 
   // Edit pages dialog
-  function openEditPagesDialog() {
+  async function openEditPagesDialog() {
     if (canEditPages) {
       const doc = documents.find(d => d.id === selectedIds[0]);
       if (doc) {
@@ -147,6 +187,8 @@
         // Initialize page order
         editPageOrder = doc.pageOrder || Array.from({ length: doc.pageCount }, (_, i) => i + 1);
         showEditPagesDialog = true;
+        // Generate page thumbnails
+        generateEditThumbnails(doc);
       }
     }
   }
@@ -236,6 +278,8 @@
   function handleReset() {
     documents = [];
     selectedIds = [];
+    thumbnails = {};
+    editPageThumbnails = [];
     result = null;
     savedPath = null;
     error = null;
@@ -314,6 +358,7 @@
         <FileList
           files={documents}
           bind:selectedIds
+          {thumbnails}
           on:reorder={handleReorder}
           on:remove={handleRemove}
           on:selectionChange={handleSelectionChange}
@@ -392,12 +437,19 @@
   <div class="modal-overlay" on:click={() => showEditPagesDialog = false}>
     <div class="modal wide" on:click|stopPropagation>
       <h3>Edit Pages: {editingDoc.name}</h3>
-      <p class="modal-hint">Drag to reorder or use arrow buttons</p>
+      <p class="modal-hint">Use arrows to reorder pages</p>
 
-      <div class="page-grid">
+      <div class="page-grid-thumbnails">
         {#each editPageOrder as pageNum, index}
-          <div class="page-item">
-            <span class="page-number">Page {pageNum}</span>
+          <div class="page-card">
+            <div class="page-thumbnail">
+              {#if editPageThumbnails[pageNum - 1]}
+                <img src={editPageThumbnails[pageNum - 1].imageData} alt="Page {pageNum}" />
+              {:else}
+                <div class="thumb-placeholder">{pageNum}</div>
+              {/if}
+            </div>
+            <div class="page-label">Page {pageNum}</div>
             <div class="page-controls">
               <button
                 class="arrow-btn"
@@ -675,24 +727,57 @@
     margin-top: 8px;
   }
 
-  .page-grid {
-    max-height: 300px;
+  .page-grid-thumbnails {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 12px;
+    max-height: 400px;
     overflow-y: auto;
     margin-bottom: 16px;
+    padding: 4px;
   }
 
-  .page-item {
+  .page-card {
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
     align-items: center;
-    padding: 10px 12px;
-    margin-bottom: 6px;
+    padding: 8px;
     background: var(--bg-secondary, #1a1a2e);
-    border-radius: 6px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color, #333);
   }
 
-  .page-number {
-    font-size: 0.9rem;
+  .page-thumbnail {
+    width: 80px;
+    height: 110px;
+    margin-bottom: 8px;
+    border-radius: 4px;
+    overflow: hidden;
+    background: var(--bg-tertiary, #232338);
+  }
+
+  .page-thumbnail img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .thumb-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: var(--text-secondary, #888);
+    border: 1px dashed var(--border-color, #444);
+    border-radius: 4px;
+  }
+
+  .page-label {
+    font-size: 0.8rem;
+    color: var(--text-secondary, #888);
+    margin-bottom: 6px;
   }
 
   .page-controls {

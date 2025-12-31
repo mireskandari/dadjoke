@@ -172,6 +172,20 @@ func (a *App) ReorderPages(path string, pageOrder []int) (*pdf.PDFDocument, erro
 }
 
 // ============================================================================
+// Thumbnail Methods
+// ============================================================================
+
+// GenerateAllThumbnails generates thumbnails for all pages in a PDF
+func (a *App) GenerateAllThumbnails(path string, width, height int) ([]*pdf.ThumbnailResult, error) {
+	return pdf.GenerateAllThumbnails(a.ctx, path, width, height)
+}
+
+// GenerateThumbnail generates a thumbnail for a single page
+func (a *App) GenerateThumbnail(path string, pageIndex, width, height int) (*pdf.ThumbnailResult, error) {
+	return pdf.GenerateThumbnail(a.ctx, path, pageIndex, width, height)
+}
+
+// ============================================================================
 // Helper Functions
 // ============================================================================
 

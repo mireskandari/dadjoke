@@ -3,6 +3,7 @@
 
   export let files = [];
   export let selectedIds = [];
+  export let thumbnails = {}; // Map of file.id -> thumbnail data URL
 
   const dispatch = createEventDispatcher();
 
@@ -79,6 +80,16 @@
         />
         <span class="checkmark"></span>
       </label>
+
+      <div class="thumbnail-wrapper">
+        {#if thumbnails[file.id]}
+          <img src={thumbnails[file.id]} alt="Preview" class="thumbnail" />
+        {:else}
+          <div class="thumbnail-placeholder">
+            <span>PDF</span>
+          </div>
+        {/if}
+      </div>
 
       <div class="file-info">
         <span class="file-name">{file.name}</span>
@@ -185,6 +196,37 @@
 
   .checkbox-wrapper input:checked ~ .checkmark:after {
     display: block;
+  }
+
+  .thumbnail-wrapper {
+    width: 40px;
+    height: 56px;
+    flex-shrink: 0;
+  }
+
+  .thumbnail {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 4px;
+    background: var(--bg-tertiary, #232338);
+  }
+
+  .thumbnail-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-tertiary, #232338);
+    border-radius: 4px;
+    border: 1px dashed var(--border-color, #444);
+  }
+
+  .thumbnail-placeholder span {
+    font-size: 0.65rem;
+    color: var(--text-secondary, #888);
+    font-weight: 600;
   }
 
   .file-info {

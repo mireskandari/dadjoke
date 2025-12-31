@@ -86,6 +86,24 @@ export namespace pdf {
 	        this.pageOrder = source["pageOrder"];
 	    }
 	}
+	export class ThumbnailResult {
+	    pageIndex: number;
+	    imageData: string;
+	    width: number;
+	    height: number;
+	
+	    static createFrom(source: any = {}) {
+	        return new ThumbnailResult(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.pageIndex = source["pageIndex"];
+	        this.imageData = source["imageData"];
+	        this.width = source["width"];
+	        this.height = source["height"];
+	    }
+	}
 
 }
 

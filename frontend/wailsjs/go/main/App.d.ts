@@ -6,6 +6,10 @@ export function CombinePDFs(arg1:Array<pdf.PDFDocument>):Promise<pdf.CombineResu
 
 export function CompressPDF(arg1:string,arg2:string):Promise<pdf.CompressionResult>;
 
+export function GenerateAllThumbnails(arg1:string,arg2:number,arg3:number):Promise<Array<pdf.ThumbnailResult>>;
+
+export function GenerateThumbnail(arg1:string,arg2:number,arg3:number,arg4:number):Promise<pdf.ThumbnailResult>;
+
 export function LoadPDFInfo(arg1:string):Promise<pdf.PDFDocument>;
 
 export function MergeTwoFiles(arg1:string,arg2:string,arg3:string):Promise<pdf.PDFDocument>;

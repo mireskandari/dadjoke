@@ -10,6 +10,14 @@ export function CompressPDF(arg1, arg2) {
   return window['go']['main']['App']['CompressPDF'](arg1, arg2);
 }
 
+export function GenerateAllThumbnails(arg1, arg2, arg3) {
+  return window['go']['main']['App']['GenerateAllThumbnails'](arg1, arg2, arg3);
+}
+
+export function GenerateThumbnail(arg1, arg2, arg3, arg4) {
+  return window['go']['main']['App']['GenerateThumbnail'](arg1, arg2, arg3, arg4);
+}
+
 export function LoadPDFInfo(arg1) {
   return window['go']['main']['App']['LoadPDFInfo'](arg1);
 }

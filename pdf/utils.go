@@ -12,21 +12,19 @@ import (
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
 
-// contextKey is used to check if we have a valid Wails context
-type contextKey struct{}
+// testMode disables Wails runtime calls during tests
+var testMode = false
 
-// IsTestContext checks if we're running in a test context (not a Wails context)
-func IsTestContext(ctx context.Context) bool {
-	// Check if context has a "wails" value - if ctx.Value returns nil for all wails keys,
-	// we're likely in a test. We use a simple heuristic: context.Background() has no values.
-	return ctx == context.Background() || ctx == context.TODO()
+// SetTestMode enables or disables test mode (disables Wails runtime calls)
+func SetTestMode(enabled bool) {
+	testMode = enabled
 }
 
-// safeEmit emits an event only if the context is a valid Wails context
-// This allows tests to pass a context.Background() without causing panics
+// safeEmit emits an event only if not in test mode
+// This allows tests to run without requiring a Wails context
 func safeEmit(ctx context.Context, eventName string, data ...interface{}) {
-	if IsTestContext(ctx) {
-		return // Skip emitting events in test context
+	if testMode {
+		return
 	}
 	runtime.EventsEmit(ctx, eventName, data...)
 }
