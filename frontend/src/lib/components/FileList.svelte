@@ -70,7 +70,16 @@
       on:dragover={(e) => handleDragOver(e, index)}
       on:dragend={handleDragEnd}
     >
-      <div class="drag-handle" title="Drag to reorder">≡</div>
+      <div class="drag-handle" title="Drag to reorder">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+          <circle cx="5" cy="3" r="1.5"/>
+          <circle cx="11" cy="3" r="1.5"/>
+          <circle cx="5" cy="8" r="1.5"/>
+          <circle cx="11" cy="8" r="1.5"/>
+          <circle cx="5" cy="13" r="1.5"/>
+          <circle cx="11" cy="13" r="1.5"/>
+        </svg>
+      </div>
 
       <label class="checkbox-wrapper">
         <input
@@ -115,34 +124,46 @@
   .file-list {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 10px;
   }
 
   .file-item {
     display: flex;
     align-items: center;
-    gap: 12px;
-    padding: 12px;
-    background: var(--bg-secondary, #1a1a2e);
-    border-radius: 8px;
-    border: 1px solid transparent;
-    transition: all 0.2s;
+    gap: 14px;
+    padding: 14px 16px;
+    background: var(--bg-secondary);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+    transition: all var(--transition-fast);
+  }
+
+  .file-item:hover {
+    box-shadow: var(--shadow-md);
   }
 
   .file-item.selected {
-    border-color: var(--accent-color, #646cff);
-    background: var(--bg-hover, #232338);
+    background: var(--accent-light);
+    box-shadow: var(--shadow-md), inset 0 0 0 2px var(--accent-color);
   }
 
   .file-item.dragging {
-    opacity: 0.5;
+    opacity: 0.4;
+    transform: scale(0.98);
   }
 
   .drag-handle {
     cursor: grab;
-    color: var(--text-secondary, #888);
-    font-size: 1.2rem;
+    color: var(--text-muted);
     user-select: none;
+    padding: 4px;
+    border-radius: 4px;
+    transition: all var(--transition-fast);
+  }
+
+  .drag-handle:hover {
+    color: var(--accent-color);
+    background: var(--accent-light);
   }
 
   .drag-handle:active {
@@ -170,15 +191,19 @@
     left: 0;
     width: 18px;
     height: 18px;
-    border: 2px solid var(--border-color, #444);
-    border-radius: 4px;
-    background: var(--bg-tertiary, #232338);
-    transition: all 0.2s;
+    border: 2px solid var(--border-color);
+    border-radius: 5px;
+    background: var(--bg-secondary);
+    transition: all var(--transition-fast);
+  }
+
+  .checkbox-wrapper:hover .checkmark {
+    border-color: var(--accent-color);
   }
 
   .checkbox-wrapper input:checked ~ .checkmark {
-    background: var(--accent-color, #646cff);
-    border-color: var(--accent-color, #646cff);
+    background: var(--accent-color);
+    border-color: var(--accent-color);
   }
 
   .checkmark:after {
@@ -208,8 +233,9 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
-    border-radius: 4px;
-    background: var(--bg-tertiary, #232338);
+    border-radius: 6px;
+    background: var(--bg-tertiary);
+    box-shadow: var(--shadow-sm);
   }
 
   .thumbnail-placeholder {
@@ -218,14 +244,14 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: var(--bg-tertiary, #232338);
-    border-radius: 4px;
-    border: 1px dashed var(--border-color, #444);
+    background: var(--bg-tertiary);
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
   }
 
   .thumbnail-placeholder span {
     font-size: 0.65rem;
-    color: var(--text-secondary, #888);
+    color: var(--text-muted);
     font-weight: 600;
   }
 
@@ -233,13 +259,13 @@
     flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    gap: 3px;
     min-width: 0;
   }
 
   .file-name {
     font-weight: 500;
-    color: var(--text-primary, #fff);
+    color: var(--text-primary);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -247,19 +273,22 @@
 
   .file-meta {
     font-size: 0.8rem;
-    color: var(--text-secondary, #888);
+    color: var(--text-secondary);
   }
 
   .remove-btn {
-    width: 24px;
-    height: 24px;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     background: transparent;
     border: none;
-    border-radius: 4px;
-    color: var(--text-secondary, #888);
+    border-radius: var(--radius-sm);
+    color: var(--text-muted);
     cursor: pointer;
-    opacity: 0.5;
-    transition: all 0.2s;
+    opacity: 0;
+    transition: all var(--transition-fast);
   }
 
   .file-item:hover .remove-btn {
@@ -267,16 +296,17 @@
   }
 
   .remove-btn:hover {
-    background: #c00;
-    color: white;
+    background: var(--error-light);
+    color: var(--error-color);
   }
 
   .total-row {
-    padding: 12px;
+    padding: 14px 16px;
     text-align: right;
     font-size: 0.9rem;
-    color: var(--text-secondary, #888);
-    border-top: 1px solid var(--border-color, #333);
+    color: var(--text-secondary);
+    background: var(--bg-tertiary);
+    border-radius: var(--radius-sm);
     margin-top: 4px;
   }
 </style>

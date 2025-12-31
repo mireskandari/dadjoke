@@ -1,5 +1,6 @@
 <script>
   import { createEventDispatcher, onMount, onDestroy } from 'svelte';
+  import { flip } from 'svelte/animate';
   import { EventsOn, EventsOff } from '../../wailsjs/runtime/runtime.js';
   import {
     SelectPDFFiles,
@@ -38,6 +39,10 @@
   let showEditPagesDialog = false;
   let editingDoc = null;
   let editPageOrder = [];
+
+  // Drag-and-drop state for Edit Pages
+  let draggedPageIndex = null;
+  let dragOverPageIndex = null;
 
   // Generate thumbnail for a document (first page only for list view)
   async function generateThumbnail(doc) {
@@ -193,20 +198,37 @@
     }
   }
 
-  function movePageUp(index) {
-    if (index > 0) {
-      const newOrder = [...editPageOrder];
-      [newOrder[index - 1], newOrder[index]] = [newOrder[index], newOrder[index - 1]];
-      editPageOrder = newOrder;
-    }
+  // Drag-and-drop handlers for page reordering
+  function handlePageDragStart(e, index) {
+    draggedPageIndex = index;
+    e.dataTransfer.effectAllowed = 'move';
   }
 
-  function movePageDown(index) {
-    if (index < editPageOrder.length - 1) {
-      const newOrder = [...editPageOrder];
-      [newOrder[index], newOrder[index + 1]] = [newOrder[index + 1], newOrder[index]];
-      editPageOrder = newOrder;
+  function handlePageDragOver(e, index) {
+    e.preventDefault();
+    if (draggedPageIndex === null || draggedPageIndex === index) {
+      dragOverPageIndex = null;
+      return;
     }
+    dragOverPageIndex = index;
+  }
+
+  function handlePageDrop(e, targetIndex) {
+    e.preventDefault();
+    if (draggedPageIndex === null || draggedPageIndex === targetIndex) return;
+
+    const newOrder = [...editPageOrder];
+    const [draggedPage] = newOrder.splice(draggedPageIndex, 1);
+    newOrder.splice(targetIndex, 0, draggedPage);
+    editPageOrder = newOrder;
+
+    draggedPageIndex = null;
+    dragOverPageIndex = null;
+  }
+
+  function handlePageDragEnd() {
+    draggedPageIndex = null;
+    dragOverPageIndex = null;
   }
 
   async function applyPageOrder() {
@@ -437,11 +459,31 @@
   <div class="modal-overlay" on:click={() => showEditPagesDialog = false}>
     <div class="modal wide" on:click|stopPropagation>
       <h3>Edit Pages: {editingDoc.name}</h3>
-      <p class="modal-hint">Use arrows to reorder pages</p>
+      <p class="modal-hint">Drag pages to reorder</p>
 
-      <div class="page-grid-thumbnails">
-        {#each editPageOrder as pageNum, index}
-          <div class="page-card">
+      <div class="page-grid-drag">
+        {#each editPageOrder as pageNum, index (pageNum)}
+          <div
+            class="page-card-drag"
+            class:dragging={draggedPageIndex === index}
+            class:drag-over={dragOverPageIndex === index}
+            draggable="true"
+            animate:flip={{ duration: 200 }}
+            on:dragstart={(e) => handlePageDragStart(e, index)}
+            on:dragover={(e) => handlePageDragOver(e, index)}
+            on:drop={(e) => handlePageDrop(e, index)}
+            on:dragend={handlePageDragEnd}
+          >
+            <div class="drag-grip">
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
+                <circle cx="5" cy="3" r="1.5"/>
+                <circle cx="11" cy="3" r="1.5"/>
+                <circle cx="5" cy="8" r="1.5"/>
+                <circle cx="11" cy="8" r="1.5"/>
+                <circle cx="5" cy="13" r="1.5"/>
+                <circle cx="11" cy="13" r="1.5"/>
+              </svg>
+            </div>
             <div class="page-thumbnail">
               {#if editPageThumbnails[pageNum - 1]}
                 <img src={editPageThumbnails[pageNum - 1].imageData} alt="Page {pageNum}" />
@@ -450,25 +492,13 @@
               {/if}
             </div>
             <div class="page-label">Page {pageNum}</div>
-            <div class="page-controls">
-              <button
-                class="arrow-btn"
-                disabled={index === 0}
-                on:click={() => movePageUp(index)}
-              >↑</button>
-              <button
-                class="arrow-btn"
-                disabled={index === editPageOrder.length - 1}
-                on:click={() => movePageDown(index)}
-              >↓</button>
-            </div>
           </div>
         {/each}
       </div>
 
       <div class="modal-actions">
         <button class="btn secondary" on:click={() => showEditPagesDialog = false}>Cancel</button>
-        <button class="btn primary" on:click={applyPageOrder}>Done</button>
+        <button class="btn primary" on:click={applyPageOrder}>Apply</button>
       </div>
     </div>
   </div>
@@ -476,44 +506,50 @@
 
 <style>
   .combine {
-    max-width: 600px;
+    max-width: 620px;
     margin: 0 auto;
-    padding: 20px;
+    padding: 24px;
   }
 
   .header {
     display: flex;
     align-items: center;
-    gap: 12px;
-    margin-bottom: 24px;
+    gap: 14px;
+    margin-bottom: 28px;
   }
 
   .header h1 {
     font-size: 1.5rem;
+    font-weight: 600;
     margin: 0;
+    color: var(--text-primary);
   }
 
   .back-btn {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 36px;
-    height: 36px;
-    background: var(--bg-secondary, #1a1a2e);
-    border: 1px solid var(--border-color, #333);
-    border-radius: 8px;
-    color: var(--text-primary, #fff);
+    width: 40px;
+    height: 40px;
+    background: var(--bg-secondary);
+    border: none;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+    color: var(--text-secondary);
     cursor: pointer;
+    transition: all var(--transition-fast);
   }
 
   .back-btn:hover {
-    background: var(--bg-hover, #232338);
+    background: var(--bg-hover);
+    color: var(--accent-color);
+    box-shadow: var(--shadow-md);
   }
 
   .content {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 18px;
   }
 
   .toolbar {
@@ -525,9 +561,12 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 12px 16px;
-    background: var(--accent-color, #646cff);
-    border-radius: 8px;
+    padding: 14px 18px;
+    background: var(--accent-light);
+    border: 1px solid var(--accent-color);
+    border-radius: var(--radius-md);
+    color: var(--accent-color);
+    font-weight: 500;
   }
 
   .selection-actions {
@@ -536,88 +575,99 @@
   }
 
   .btn {
-    padding: 10px 20px;
+    padding: 12px 22px;
     border: none;
-    border-radius: 6px;
+    border-radius: var(--radius-sm);
     font-size: 0.95rem;
+    font-weight: 500;
     cursor: pointer;
-    transition: background 0.2s;
+    transition: all var(--transition-fast);
   }
 
   .btn.small {
-    padding: 6px 12px;
+    padding: 8px 14px;
     font-size: 0.85rem;
   }
 
   .btn.primary {
-    background: var(--accent-color, #646cff);
+    background: var(--accent-color);
     color: white;
   }
 
   .btn.primary:hover:not(:disabled) {
-    background: var(--accent-hover, #535bf2);
+    background: var(--accent-hover);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
   }
 
   .btn.primary:disabled {
-    opacity: 0.5;
+    background: var(--border-color);
+    color: var(--text-muted);
     cursor: not-allowed;
   }
 
   .btn.secondary {
-    background: var(--bg-secondary, #1a1a2e);
-    color: var(--text-primary, #fff);
-    border: 1px solid var(--border-color, #333);
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
   }
 
   .btn.secondary:hover {
-    background: var(--bg-hover, #232338);
+    background: var(--bg-hover);
   }
 
   .selection-bar .btn.small {
-    background: rgba(255,255,255,0.2);
-    color: white;
-    border: none;
+    background: var(--bg-secondary);
+    color: var(--accent-color);
+    border: 1px solid var(--accent-color);
   }
 
   .selection-bar .btn.small:hover {
-    background: rgba(255,255,255,0.3);
+    background: var(--accent-color);
+    color: white;
   }
 
   .combine-btn {
     width: 100%;
-    padding: 14px;
+    padding: 16px;
     font-size: 1rem;
+    margin-top: 4px;
   }
 
   .success-card {
     text-align: center;
-    padding: 32px;
-    background: var(--bg-secondary, #1a1a2e);
-    border-radius: 12px;
+    padding: 36px;
+    background: var(--bg-secondary);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
   }
 
   .success-icon {
-    width: 48px;
-    height: 48px;
-    line-height: 48px;
-    margin: 0 auto 16px;
-    background: #2ecc71;
+    width: 56px;
+    height: 56px;
+    line-height: 56px;
+    margin: 0 auto 20px;
+    background: var(--success-light);
     border-radius: 50%;
-    font-size: 1.5rem;
-    color: white;
+    font-size: 1.6rem;
+    color: var(--success-color);
   }
 
   .success-card h2 {
-    margin: 0 0 16px;
-    font-size: 1.3rem;
+    margin: 0 0 20px;
+    font-size: 1.4rem;
+    color: var(--text-primary);
   }
 
   .stats-row {
     display: flex;
     justify-content: center;
-    gap: 24px;
-    margin-bottom: 20px;
-    color: var(--text-secondary, #888);
+    gap: 20px;
+    margin-bottom: 24px;
+    padding: 14px;
+    background: var(--bg-tertiary);
+    border-radius: var(--radius-sm);
+    color: var(--text-secondary);
     font-size: 0.9rem;
   }
 
@@ -628,24 +678,31 @@
   }
 
   .save-cancelled {
-    color: var(--text-secondary, #888);
+    color: var(--text-secondary);
+    font-size: 0.9rem;
   }
 
   .link-btn {
     background: none;
     border: none;
-    color: var(--accent-color, #646cff);
+    color: var(--accent-color);
     cursor: pointer;
     text-decoration: underline;
+    font-size: inherit;
+  }
+
+  .link-btn:hover {
+    color: var(--accent-hover);
   }
 
   .error {
-    padding: 12px;
-    background: rgba(231, 76, 60, 0.2);
-    border: 1px solid #e74c3c;
-    border-radius: 8px;
-    color: #e74c3c;
+    padding: 14px 18px;
+    background: var(--error-light);
+    border: 1px solid var(--error-color);
+    border-radius: var(--radius-sm);
+    color: var(--error-color);
     text-align: center;
+    font-size: 0.95rem;
   }
 
   /* Modal styles */
@@ -655,34 +712,55 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.7);
+    background: rgba(0, 0, 0, 0.4);
     display: flex;
     align-items: center;
     justify-content: center;
     z-index: 1000;
+    animation: fadeIn 200ms ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
   }
 
   .modal {
-    background: var(--bg-primary, #0f0f1a);
-    border: 1px solid var(--border-color, #333);
-    border-radius: 12px;
-    padding: 24px;
-    max-width: 400px;
+    background: var(--bg-secondary);
+    border: none;
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-lg);
+    padding: 28px;
+    max-width: 420px;
     width: 90%;
+    animation: slideUp 200ms cubic-bezier(0, 0, 0.2, 1);
+  }
+
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(10px) scale(0.98);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
   }
 
   .modal.wide {
-    max-width: 500px;
+    max-width: 540px;
   }
 
   .modal h3 {
-    margin: 0 0 16px;
+    margin: 0 0 8px;
+    font-size: 1.2rem;
+    color: var(--text-primary);
   }
 
   .modal-hint {
-    color: var(--text-secondary, #888);
+    color: var(--text-secondary);
     font-size: 0.9rem;
-    margin: 0 0 16px;
+    margin: 0 0 20px;
   }
 
   .merge-option {
@@ -690,36 +768,38 @@
     flex-direction: column;
     align-items: flex-start;
     width: 100%;
-    padding: 16px;
+    padding: 18px 20px;
     margin-bottom: 12px;
-    background: var(--bg-secondary, #1a1a2e);
-    border: 1px solid var(--border-color, #333);
-    border-radius: 8px;
-    color: var(--text-primary, #fff);
+    background: var(--bg-tertiary);
+    border: 2px solid transparent;
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
     text-align: left;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all var(--transition-fast);
   }
 
   .merge-option:hover {
-    background: var(--bg-hover, #232338);
-    border-color: var(--accent-color, #646cff);
+    background: var(--accent-light);
+    border-color: var(--accent-color);
   }
 
   .merge-option strong {
     font-size: 1rem;
     margin-bottom: 4px;
+    color: var(--text-primary);
   }
 
   .merge-option span {
     font-size: 0.85rem;
-    color: var(--text-secondary, #888);
+    color: var(--text-secondary);
   }
 
   .merge-option .hint {
     font-size: 0.75rem;
-    margin-top: 4px;
+    margin-top: 6px;
     font-style: italic;
+    color: var(--text-muted);
   }
 
   .cancel-btn {
@@ -727,33 +807,70 @@
     margin-top: 8px;
   }
 
-  .page-grid-thumbnails {
+  /* Drag-and-drop page grid */
+  .page-grid-drag {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-    gap: 12px;
+    gap: 14px;
     max-height: 400px;
     overflow-y: auto;
-    margin-bottom: 16px;
-    padding: 4px;
+    margin-bottom: 20px;
+    padding: 8px;
   }
 
-  .page-card {
+  .page-card-drag {
+    position: relative;
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 8px;
-    background: var(--bg-secondary, #1a1a2e);
-    border-radius: 8px;
-    border: 1px solid var(--border-color, #333);
+    padding: 12px;
+    background: var(--bg-tertiary);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+    cursor: grab;
+    transition: all var(--transition-fast);
+  }
+
+  .page-card-drag:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+  }
+
+  .page-card-drag:active {
+    cursor: grabbing;
+  }
+
+  .page-card-drag.dragging {
+    opacity: 0.4;
+    transform: scale(0.95);
+  }
+
+  .page-card-drag.drag-over {
+    box-shadow: var(--shadow-md), inset 0 0 0 2px var(--accent-color);
+    background: var(--accent-light);
+  }
+
+  .drag-grip {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    color: var(--text-muted);
+    opacity: 0;
+    transition: opacity var(--transition-fast);
+  }
+
+  .page-card-drag:hover .drag-grip {
+    opacity: 1;
   }
 
   .page-thumbnail {
     width: 80px;
     height: 110px;
-    margin-bottom: 8px;
-    border-radius: 4px;
+    margin-bottom: 10px;
+    border-radius: var(--radius-sm);
     overflow: hidden;
-    background: var(--bg-tertiary, #232338);
+    background: var(--bg-secondary);
+    box-shadow: var(--shadow-sm);
   }
 
   .page-thumbnail img {
@@ -768,40 +885,16 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.5rem;
-    color: var(--text-secondary, #888);
-    border: 1px dashed var(--border-color, #444);
-    border-radius: 4px;
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    background: var(--bg-secondary);
   }
 
   .page-label {
     font-size: 0.8rem;
-    color: var(--text-secondary, #888);
-    margin-bottom: 6px;
-  }
-
-  .page-controls {
-    display: flex;
-    gap: 4px;
-  }
-
-  .arrow-btn {
-    width: 28px;
-    height: 28px;
-    background: var(--bg-tertiary, #333);
-    border: none;
-    border-radius: 4px;
-    color: var(--text-primary, #fff);
-    cursor: pointer;
-  }
-
-  .arrow-btn:disabled {
-    opacity: 0.3;
-    cursor: not-allowed;
-  }
-
-  .arrow-btn:hover:not(:disabled) {
-    background: var(--accent-color, #646cff);
+    font-weight: 500;
+    color: var(--text-secondary);
   }
 
   .modal-actions {

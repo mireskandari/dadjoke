@@ -38,67 +38,74 @@
 <style>
   .progress-container {
     width: 100%;
-    padding: 16px;
-    background: var(--bg-secondary, #1a1a2e);
-    border-radius: 8px;
+    padding: 20px;
+    background: var(--bg-secondary);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
   }
 
   .progress-header {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 8px;
+    margin-bottom: 12px;
     font-size: 0.9rem;
   }
 
   .progress-message {
-    color: var(--text-primary, #fff);
+    color: var(--text-primary);
+    font-weight: 500;
   }
 
   .progress-percent {
-    color: var(--text-secondary, #888);
+    color: var(--accent-color);
     font-family: monospace;
+    font-weight: 600;
   }
 
   .progress-bar {
     height: 8px;
-    background: var(--bg-tertiary, #2a2a3e);
+    background: var(--bg-tertiary);
     border-radius: 4px;
     overflow: hidden;
   }
 
   .progress-fill {
     height: 100%;
-    background: var(--accent-color, #646cff);
+    background: linear-gradient(90deg, var(--accent-color), var(--accent-hover));
     border-radius: 4px;
-    transition: width 0.3s ease;
+    transition: width var(--transition-smooth);
   }
 
   .logs-toggle {
     display: flex;
     align-items: center;
     gap: 6px;
-    margin-top: 12px;
-    padding: 4px 8px;
-    background: none;
+    margin-top: 16px;
+    padding: 6px 10px;
+    background: var(--bg-tertiary);
     border: none;
-    color: var(--text-secondary, #888);
+    border-radius: var(--radius-sm);
+    color: var(--text-secondary);
     font-size: 0.85rem;
     cursor: pointer;
+    transition: all var(--transition-fast);
   }
 
   .logs-toggle:hover {
-    color: var(--text-primary, #fff);
+    background: var(--bg-hover);
+    color: var(--text-primary);
   }
 
   .toggle-icon {
     font-size: 0.7rem;
+    transition: transform var(--transition-fast);
   }
 
   .logs-container {
-    margin-top: 8px;
-    padding: 12px;
-    background: var(--bg-tertiary, #0a0a14);
-    border-radius: 6px;
+    margin-top: 12px;
+    padding: 12px 16px;
+    background: var(--bg-tertiary);
+    border-radius: var(--radius-sm);
     max-height: 150px;
     overflow-y: auto;
     font-family: monospace;
@@ -107,14 +114,15 @@
   }
 
   .log-line {
-    color: var(--text-secondary, #888);
-    padding: 2px 0;
+    color: var(--text-secondary);
+    padding: 3px 0;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
   }
 
   .log-line:last-child {
-    color: var(--text-primary, #fff);
+    color: var(--accent-color);
+    font-weight: 500;
   }
 </style>

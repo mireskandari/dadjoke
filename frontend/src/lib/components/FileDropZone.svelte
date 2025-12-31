@@ -97,24 +97,25 @@
 
 <style>
   .dropzone {
-    border: 2px dashed var(--border-color, #444);
-    border-radius: 12px;
-    padding: 40px 20px;
+    border: 2px dashed var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 48px 24px;
     text-align: center;
     cursor: pointer;
-    transition: all 0.2s ease;
-    background: var(--bg-secondary, #1a1a2e);
+    transition: all var(--transition-normal);
+    background: var(--bg-tertiary);
   }
 
   .dropzone:hover:not(.disabled) {
-    border-color: var(--accent-color, #646cff);
-    background: var(--bg-hover, #232338);
+    border-color: var(--accent-color);
+    background: var(--accent-light);
   }
 
   .dropzone.dragging {
-    border-color: var(--accent-color, #646cff);
-    background: var(--bg-hover, #232338);
-    transform: scale(1.01);
+    border-color: var(--accent-color);
+    background: var(--accent-light);
+    transform: scale(1.02);
+    box-shadow: var(--shadow-md);
   }
 
   .dropzone.disabled {
@@ -126,41 +127,52 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 12px;
+    gap: 16px;
   }
 
   .dropzone-icon {
-    color: var(--text-secondary, #888);
+    color: var(--accent-color);
+    opacity: 0.8;
   }
 
   .dropzone-text {
-    color: var(--text-secondary, #888);
+    color: var(--text-secondary);
     line-height: 1.6;
+    font-size: 0.95rem;
   }
 
   .dropzone-or {
     font-size: 0.85em;
-    opacity: 0.7;
+    opacity: 0.6;
+    color: var(--text-muted);
   }
 
   .dropzone-btn {
     margin-top: 8px;
-    padding: 10px 24px;
+    padding: 12px 28px;
     border: none;
-    border-radius: 6px;
-    background: var(--accent-color, #646cff);
+    border-radius: var(--radius-sm);
+    background: var(--accent-color);
     color: white;
     font-size: 0.95rem;
+    font-weight: 500;
     cursor: pointer;
-    transition: background 0.2s;
+    transition: all var(--transition-fast);
   }
 
   .dropzone-btn:hover:not(:disabled) {
-    background: var(--accent-hover, #535bf2);
+    background: var(--accent-hover);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+  }
+
+  .dropzone-btn:active:not(:disabled) {
+    transform: translateY(0);
   }
 
   .dropzone-btn:disabled {
-    opacity: 0.5;
+    background: var(--border-color);
+    color: var(--text-muted);
     cursor: not-allowed;
   }
 </style>

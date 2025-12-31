@@ -219,38 +219,44 @@
 
 <style>
   .compress {
-    max-width: 500px;
+    max-width: 520px;
     margin: 0 auto;
-    padding: 20px;
+    padding: 24px;
   }
 
   .header {
     display: flex;
     align-items: center;
-    gap: 12px;
-    margin-bottom: 24px;
+    gap: 14px;
+    margin-bottom: 28px;
   }
 
   .header h1 {
     font-size: 1.5rem;
+    font-weight: 600;
     margin: 0;
+    color: var(--text-primary);
   }
 
   .back-btn {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 36px;
-    height: 36px;
-    background: var(--bg-secondary, #1a1a2e);
-    border: 1px solid var(--border-color, #333);
-    border-radius: 8px;
-    color: var(--text-primary, #fff);
+    width: 40px;
+    height: 40px;
+    background: var(--bg-secondary);
+    border: none;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+    color: var(--text-secondary);
     cursor: pointer;
+    transition: all var(--transition-fast);
   }
 
   .back-btn:hover {
-    background: var(--bg-hover, #232338);
+    background: var(--bg-hover);
+    color: var(--accent-color);
+    box-shadow: var(--shadow-md);
   }
 
   .content {
@@ -263,9 +269,10 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 16px;
-    background: var(--bg-secondary, #1a1a2e);
-    border-radius: 8px;
+    padding: 18px 20px;
+    background: var(--bg-secondary);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
   }
 
   .file-info {
@@ -276,59 +283,68 @@
 
   .file-name {
     font-weight: 500;
-    color: var(--text-primary, #fff);
+    color: var(--text-primary);
   }
 
   .file-size {
     font-size: 0.85rem;
-    color: var(--text-secondary, #888);
+    color: var(--text-secondary);
   }
 
   .remove-btn {
-    width: 28px;
-    height: 28px;
-    background: var(--bg-tertiary, #333);
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-tertiary);
     border: none;
-    border-radius: 4px;
-    color: var(--text-secondary, #888);
+    border-radius: var(--radius-sm);
+    color: var(--text-muted);
     cursor: pointer;
+    transition: all var(--transition-fast);
   }
 
   .remove-btn:hover {
-    background: #c00;
-    color: white;
+    background: var(--error-light);
+    color: var(--error-color);
   }
 
   .presets {
-    background: var(--bg-secondary, #1a1a2e);
-    border-radius: 8px;
-    padding: 16px;
+    background: var(--bg-secondary);
+    border-radius: var(--radius-md);
+    padding: 20px;
+    box-shadow: var(--shadow-sm);
   }
 
   .presets h3 {
-    margin: 0 0 12px;
+    margin: 0 0 14px;
     font-size: 0.9rem;
-    color: var(--text-secondary, #888);
+    font-weight: 500;
+    color: var(--text-secondary);
   }
 
   .preset-option {
     display: flex;
     align-items: center;
-    gap: 12px;
-    padding: 12px;
-    margin: 4px 0;
-    background: var(--bg-tertiary, #232338);
-    border-radius: 6px;
+    gap: 14px;
+    padding: 14px 16px;
+    margin: 6px 0;
+    background: var(--bg-tertiary);
+    border: 2px solid transparent;
+    border-radius: var(--radius-sm);
     cursor: pointer;
-    transition: background 0.2s;
+    transition: all var(--transition-fast);
   }
 
   .preset-option:hover {
-    background: var(--bg-hover, #2a2a4e);
+    background: var(--bg-hover);
+    border-color: var(--border-color);
   }
 
   .preset-option.selected {
-    background: var(--accent-color, #646cff);
+    background: var(--accent-light);
+    border-color: var(--accent-color);
   }
 
   .preset-option input {
@@ -336,80 +352,94 @@
   }
 
   .preset-name {
-    font-weight: 500;
+    font-weight: 600;
     min-width: 80px;
+    color: var(--text-primary);
   }
 
   .preset-desc {
     font-size: 0.85rem;
-    color: var(--text-secondary, #888);
+    color: var(--text-secondary);
+  }
+
+  .preset-option.selected .preset-name {
+    color: var(--accent-color);
   }
 
   .preset-option.selected .preset-desc {
-    color: rgba(255,255,255,0.8);
+    color: var(--text-secondary);
   }
 
   .btn {
-    padding: 12px 24px;
+    padding: 14px 28px;
     border: none;
-    border-radius: 8px;
+    border-radius: var(--radius-sm);
     font-size: 1rem;
+    font-weight: 500;
     cursor: pointer;
-    transition: background 0.2s;
+    transition: all var(--transition-fast);
   }
 
   .btn.primary {
-    background: var(--accent-color, #646cff);
+    background: var(--accent-color);
     color: white;
   }
 
   .btn.primary:hover {
-    background: var(--accent-hover, #535bf2);
+    background: var(--accent-hover);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
   }
 
   .btn.secondary {
-    background: var(--bg-secondary, #1a1a2e);
-    color: var(--text-primary, #fff);
-    border: 1px solid var(--border-color, #333);
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
   }
 
   .btn.secondary:hover {
-    background: var(--bg-hover, #232338);
+    background: var(--bg-hover);
   }
 
   .compress-btn {
     width: 100%;
+    margin-top: 4px;
   }
 
   .success-card {
     text-align: center;
-    padding: 32px;
-    background: var(--bg-secondary, #1a1a2e);
-    border-radius: 12px;
+    padding: 36px;
+    background: var(--bg-secondary);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
   }
 
   .success-icon {
-    width: 48px;
-    height: 48px;
-    line-height: 48px;
-    margin: 0 auto 16px;
-    background: #2ecc71;
+    width: 56px;
+    height: 56px;
+    line-height: 56px;
+    margin: 0 auto 20px;
+    background: var(--success-light);
     border-radius: 50%;
-    font-size: 1.5rem;
-    color: white;
+    font-size: 1.6rem;
+    color: var(--success-color);
   }
 
   .success-card h2 {
-    margin: 0 0 20px;
-    font-size: 1.3rem;
+    margin: 0 0 24px;
+    font-size: 1.4rem;
+    color: var(--text-primary);
   }
 
   .stats {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 16px;
-    margin-bottom: 16px;
+    gap: 20px;
+    margin-bottom: 20px;
+    padding: 16px;
+    background: var(--bg-tertiary);
+    border-radius: var(--radius-sm);
   }
 
   .stat {
@@ -420,27 +450,29 @@
 
   .stat-label {
     font-size: 0.8rem;
-    color: var(--text-secondary, #888);
+    color: var(--text-secondary);
   }
 
   .stat-value {
     font-size: 1.2rem;
     font-weight: 600;
+    color: var(--text-primary);
   }
 
   .stat-arrow {
-    color: var(--text-secondary, #888);
+    color: var(--text-muted);
     font-size: 1.2rem;
   }
 
   .savings {
     font-size: 1.1rem;
-    color: #2ecc71;
-    margin-bottom: 20px;
+    font-weight: 600;
+    color: var(--success-color);
+    margin-bottom: 24px;
   }
 
   .savings.negative {
-    color: #e74c3c;
+    color: var(--error-color);
   }
 
   .actions {
@@ -450,23 +482,30 @@
   }
 
   .save-cancelled {
-    color: var(--text-secondary, #888);
+    color: var(--text-secondary);
+    font-size: 0.9rem;
   }
 
   .link-btn {
     background: none;
     border: none;
-    color: var(--accent-color, #646cff);
+    color: var(--accent-color);
     cursor: pointer;
     text-decoration: underline;
+    font-size: inherit;
+  }
+
+  .link-btn:hover {
+    color: var(--accent-hover);
   }
 
   .error {
-    padding: 12px;
-    background: rgba(231, 76, 60, 0.2);
-    border: 1px solid #e74c3c;
-    border-radius: 8px;
-    color: #e74c3c;
+    padding: 14px 18px;
+    background: var(--error-light);
+    border: 1px solid var(--error-color);
+    border-radius: var(--radius-sm);
+    color: var(--error-color);
     text-align: center;
+    font-size: 0.95rem;
   }
 </style>

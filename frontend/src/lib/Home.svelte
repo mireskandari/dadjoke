@@ -67,28 +67,29 @@
 
 <style>
   .home {
-    padding: 40px 20px;
-    max-width: 600px;
+    padding: 60px 24px;
+    max-width: 640px;
     margin: 0 auto;
   }
 
   .title {
-    font-size: 2rem;
+    font-size: 2.2rem;
     font-weight: 600;
     margin: 0 0 8px;
-    color: var(--text-primary, #fff);
+    color: var(--text-primary);
+    letter-spacing: -0.02em;
   }
 
   .subtitle {
-    color: var(--text-secondary, #888);
-    margin: 0 0 40px;
+    color: var(--text-secondary);
+    margin: 0 0 48px;
     font-size: 1.1rem;
   }
 
   .tools-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 16px;
+    gap: 20px;
   }
 
   .tool-card {
@@ -96,19 +97,19 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 8px;
-    padding: 32px 20px;
-    background: var(--bg-secondary, #1a1a2e);
-    border: 1px solid var(--border-color, #333);
-    border-radius: 12px;
+    gap: 10px;
+    padding: 40px 24px;
+    background: var(--bg-secondary);
+    border: none;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all var(--transition-normal);
   }
 
   .tool-card.available:hover {
-    background: var(--bg-hover, #232338);
-    border-color: var(--accent-color, #646cff);
-    transform: translateY(-2px);
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-hover);
   }
 
   .tool-card.coming-soon {
@@ -117,32 +118,39 @@
   }
 
   .tool-icon {
-    font-size: 2.5rem;
+    font-size: 2.8rem;
+    margin-bottom: 4px;
   }
 
   .tool-name {
-    font-size: 1.2rem;
+    font-size: 1.25rem;
     font-weight: 600;
-    color: var(--text-primary, #fff);
+    color: var(--text-primary);
   }
 
   .tool-description {
-    font-size: 0.85rem;
-    color: var(--text-secondary, #888);
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    text-align: center;
   }
 
   .coming-soon-badge {
     position: absolute;
-    top: 8px;
-    right: 8px;
-    padding: 4px 8px;
-    background: var(--bg-tertiary, #333);
-    border-radius: 4px;
+    top: 12px;
+    right: 12px;
+    padding: 5px 10px;
+    background: var(--bg-tertiary);
+    border-radius: var(--radius-sm);
     font-size: 0.7rem;
-    color: var(--text-secondary, #888);
+    font-weight: 500;
+    color: var(--text-muted);
   }
 
   @media (max-width: 480px) {
+    .home {
+      padding: 40px 20px;
+    }
+
     .tools-grid {
       grid-template-columns: 1fr;
     }
