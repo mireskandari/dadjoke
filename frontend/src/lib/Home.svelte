@@ -67,7 +67,7 @@
 
 <style>
   .home {
-    padding: 60px 24px;
+    padding: 28px 24px;
     max-width: 640px;
     margin: 0 auto;
   }

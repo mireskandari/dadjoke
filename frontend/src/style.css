@@ -68,6 +68,20 @@ body {
 
 #app {
   min-height: 100vh;
+  /* Add safe area for macOS hidden inset title bar */
+  padding-top: env(safe-area-inset-top, 0);
+}
+
+/* macOS title bar drag region */
+.titlebar-drag-region {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 32px;
+  -webkit-app-region: drag;
+  pointer-events: none;
+  z-index: 9999;
 }
 
 /* Scrollbar styling */

@@ -10,6 +10,9 @@
   }
 </script>
 
+<!-- macOS title bar drag region -->
+<div class="titlebar-drag-region"></div>
+
 <main>
   {#if currentView === 'home'}
     <Home on:navigate={handleNavigate} />
@@ -26,5 +29,6 @@
   main {
     min-height: 100vh;
     padding: 20px;
+    padding-top: 32px; /* Space for macOS traffic lights */
   }
 </style>
